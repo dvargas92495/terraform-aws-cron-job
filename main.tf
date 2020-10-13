@@ -65,9 +65,9 @@ resource "aws_iam_role_policy_attachment" "attach" {
 }
 
 resource "aws_lambda_function" "lambda_function" {
-  for_each         = var.lambdas  
+  for_each         = toset(var.lambdas)  
   function_name    = "${var.rule_name}_${each.value}"
-  role             = data.aws_iam_role.lambda_role.arn
+  role             = aws_iam_role.lambda_role.arn
   handler          = "${each.value}.handler"
   runtime          = "nodejs12.x"
   filename         = "dummy.zip"
@@ -82,7 +82,7 @@ resource "aws_cloudwatch_event_rule" "trigger_query" {
 }
 
 resource "aws_lambda_permission" "allow_query" {
-  for_each      = var.lambdas
+  for_each      = toset(var.lambdas)
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.lambda_function[each.value].arn
   principal     = "events.amazonaws.com"
@@ -90,24 +90,24 @@ resource "aws_lambda_permission" "allow_query" {
 }
 
 resource "aws_cloudwatch_event_target" "trigger_scheduler" {
-  for_each  = var.lambdas
+  for_each  = toset(var.lambdas)
   rule      = aws_cloudwatch_event_rule.trigger_query.name
   arn       = aws_lambda_function.lambda_function[each.value].arn
 }
 
 data "aws_iam_policy_document" "deploy_policy" {
-    statement {
-      actions = [
-        "lambda:UpdateFunctionCode"
-      ]
+  statement {
+    actions = [
+      "lambda:UpdateFunctionCode"
+    ]
 
-      resources = values(aws_lambda_function.lambda_function)[*].arn
-    }
+    resources = values(aws_lambda_function.lambda_function)[*].arn
+  }
 }
 
 resource "aws_iam_user" "deploy_lambda" {
-  user_name  = "${var.rule_name}-cron"
-  path       = "/"
+  name  = "${var.rule_name}-cron"
+  path  = "/"
 }
 
 resource "aws_iam_access_key" "deploy_lambda" {
@@ -115,6 +115,6 @@ resource "aws_iam_access_key" "deploy_lambda" {
 }
 
 resource "aws_iam_user_policy" "deploy_lambda" {
-  user   = data.aws_iam_user.deploy_lambda.user_name
+  user   = aws_iam_user.deploy_lambda.name
   policy = data.aws_iam_policy_document.deploy_policy.json
 }
