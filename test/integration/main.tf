@@ -5,7 +5,7 @@ provider "aws" {
 module "aws-cron-job" {
     source = "../.."
 
-    api_name = "example"
+    rule_name = "example"
     lambdas = [
         "first-lambda",
         "second-lambda"
