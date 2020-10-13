@@ -29,7 +29,8 @@ module "aws_cron_job" {
 ## Inputs
 
 - `lambdas` are the list of lambdas that run on this schedule.
-- `rule_name` is name given to the cloudwatch event rule.
+- `rule_name` is the name given to the cloudwatch event rule.
+- `schedule` is the schedule expression to pass to the cloudwatch event rule.
 - `tags` tags to add on to lambdas
 
 ## Output
