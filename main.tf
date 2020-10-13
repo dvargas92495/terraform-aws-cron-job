@@ -115,6 +115,6 @@ resource "aws_iam_access_key" "deploy_lambda" {
 }
 
 resource "aws_iam_user_policy" "deploy_lambda" {
-  user   = aws_iam_user.deploy_lambda.user_name
+  user   = aws_iam_user.deploy_lambda.name
   policy = data.aws_iam_policy_document.deploy_policy.json
 }
