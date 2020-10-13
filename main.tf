@@ -65,7 +65,7 @@ resource "aws_iam_role_policy_attachment" "attach" {
 }
 
 resource "aws_lambda_function" "lambda_function" {
-  for_each         = var.lambdas  
+  for_each         = toset(var.lambdas)  
   function_name    = "${var.rule_name}_${each.value}"
   role             = aws_iam_role.lambda_role.arn
   handler          = "${each.value}.handler"
@@ -82,7 +82,7 @@ resource "aws_cloudwatch_event_rule" "trigger_query" {
 }
 
 resource "aws_lambda_permission" "allow_query" {
-  for_each      = var.lambdas
+  for_each      = toset(var.lambdas)
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.lambda_function[each.value].arn
   principal     = "events.amazonaws.com"
@@ -90,7 +90,7 @@ resource "aws_lambda_permission" "allow_query" {
 }
 
 resource "aws_cloudwatch_event_target" "trigger_scheduler" {
-  for_each  = var.lambdas
+  for_each  = toset(var.lambdas)
   rule      = aws_cloudwatch_event_rule.trigger_query.name
   arn       = aws_lambda_function.lambda_function[each.value].arn
 }
