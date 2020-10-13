@@ -67,7 +67,7 @@ resource "aws_iam_role_policy_attachment" "attach" {
 resource "aws_lambda_function" "lambda_function" {
   for_each         = var.lambdas  
   function_name    = "${var.rule_name}_${each.value}"
-  role             = data.aws_iam_role.lambda_role.arn
+  role             = aws_iam_role.lambda_role.arn
   handler          = "${each.value}.handler"
   runtime          = "nodejs12.x"
   filename         = "dummy.zip"
@@ -96,18 +96,18 @@ resource "aws_cloudwatch_event_target" "trigger_scheduler" {
 }
 
 data "aws_iam_policy_document" "deploy_policy" {
-    statement {
-      actions = [
-        "lambda:UpdateFunctionCode"
-      ]
+  statement {
+    actions = [
+      "lambda:UpdateFunctionCode"
+    ]
 
-      resources = values(aws_lambda_function.lambda_function)[*].arn
-    }
+    resources = values(aws_lambda_function.lambda_function)[*].arn
+  }
 }
 
 resource "aws_iam_user" "deploy_lambda" {
-  user_name  = "${var.rule_name}-cron"
-  path       = "/"
+  name  = "${var.rule_name}-cron"
+  path  = "/"
 }
 
 resource "aws_iam_access_key" "deploy_lambda" {
