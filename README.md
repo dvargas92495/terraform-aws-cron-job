@@ -23,6 +23,7 @@ module "aws_cron_job" {
         "first-lambda",
         "second-lambda"
     ]
+    schedule = "cron(0 0 0 * ? *)"
 }
 ```
 
