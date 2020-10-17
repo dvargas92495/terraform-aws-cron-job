@@ -72,7 +72,8 @@ resource "aws_lambda_function" "lambda_function" {
   runtime          = "nodejs12.x"
   filename         = "dummy.zip"
   publish          = false
-  tags = var.tags
+  tags             = var.tags
+  timeout          = 30
 }
  
 resource "aws_cloudwatch_event_rule" "trigger_query" {
