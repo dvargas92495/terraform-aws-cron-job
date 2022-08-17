@@ -69,7 +69,7 @@ resource "aws_lambda_function" "lambda_function" {
   function_name    = "${var.rule_name}_${each.value}"
   role             = aws_iam_role.lambda_role.arn
   handler          = "${each.value}.handler"
-  runtime          = "nodejs12.x"
+  runtime          = "nodejs16.x"
   filename         = "dummy.zip"
   publish          = false
   tags             = var.tags
